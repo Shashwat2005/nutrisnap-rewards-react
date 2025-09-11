@@ -4,6 +4,7 @@ import { WaterTracker } from "@/components/WaterTracker";
 import { RecipeList } from "@/components/RecipeList";
 import { CameraScanner } from "@/components/CameraScanner";
 import { RewardsSection } from "@/components/RewardsSection";
+import { PersonalProfile } from "@/components/PersonalProfile";
 import { BottomNavigation } from "@/components/BottomNavigation";
 
 const Index = () => {
@@ -19,6 +20,8 @@ const Index = () => {
         return <RecipeList />;
       case 'camera':
         return <CameraScanner />;
+      case 'profile':
+        return <PersonalProfile />;
       case 'rewards':
         return <RewardsSection />;
       default:
