@@ -1,13 +1,19 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Droplets, Utensils, Trophy, TrendingUp, Activity, Target, Gift } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Droplets, Utensils, Trophy, TrendingUp, Activity, Target, Gift, LogOut } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
 import heroImage from "@/assets/nutrisnap-hero.jpg";
 
 export const Dashboard = () => {
+  const { user, signOut } = useAuth();
+  const { profile } = useProfile();
+  
   const dailyGoals = {
-    calories: { current: 1650, target: 2000 },
-    water: { current: 6, target: 8 },
+    calories: { current: 1650, target: profile?.daily_calorie_target || 2000 },
+    water: { current: 6, target: profile?.daily_water_target || 8 },
     steps: { current: 8500, target: 10000 }
   };
 
@@ -23,11 +29,22 @@ export const Dashboard = () => {
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-primary opacity-80" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center text-primary-foreground">
-            <h1 className="text-3xl font-bold mb-2">Welcome to NutriSnap</h1>
+        <div className="absolute inset-0 flex items-center justify-between px-6">
+          <div className="text-primary-foreground">
+            <h1 className="text-3xl font-bold mb-2">
+              Welcome back{profile?.first_name ? `, ${profile.first_name}` : ''}!
+            </h1>
             <p className="text-lg opacity-90">Your daily nutrition companion</p>
           </div>
+          <Button 
+            variant="secondary" 
+            size="sm"
+            onClick={signOut}
+            className="flex items-center gap-2"
+          >
+            <LogOut className="h-4 w-4" />
+            Sign Out
+          </Button>
         </div>
       </div>
 

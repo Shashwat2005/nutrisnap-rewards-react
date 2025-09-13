@@ -3,48 +3,71 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { User, Heart, AlertTriangle, Target, Activity, X } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-
-interface ProfileData {
-  name: string;
-  age: string;
-  weight: string;
-  height: string;
-  activityLevel: string;
-  goal: string;
-  diseases: string[];
-  allergies: string[];
-  dietaryPreferences: string[];
-  medications: string;
-}
+import { User, Heart, AlertTriangle, Target, Activity, X, LogOut, Loader2 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
 
 export const PersonalProfile = () => {
-  const { toast } = useToast();
-  const [profileData, setProfileData] = useState<ProfileData>({
-    name: "",
-    age: "",
-    weight: "",
-    height: "",
-    activityLevel: "",
-    goal: "",
-    diseases: [],
-    allergies: [],
-    dietaryPreferences: [],
-    medications: "",
-  });
-
-  const [newDisease, setNewDisease] = useState("");
+  const { user, signOut } = useAuth();
+  const { profile, loading, saving, updateProfile } = useProfile();
   const [newAllergy, setNewAllergy] = useState("");
+  const [newGoal, setNewGoal] = useState("");
 
-  const commonDiseases = [
-    "Diabetes Type 1", "Diabetes Type 2", "Hypertension", "Heart Disease",
-    "Kidney Disease", "Liver Disease", "Thyroid Disorder", "PCOS", "Arthritis"
-  ];
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">Loading your profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Error loading profile</p>
+      </div>
+    );
+  }
+
+  const handleInputChange = (field: keyof typeof profile, value: any) => {
+    updateProfile({ [field]: value });
+  };
+
+  const addItem = (item: string, field: 'allergies' | 'health_goals') => {
+    if (!item.trim()) return;
+    
+    const currentItems = profile[field] || [];
+    if (!currentItems.includes(item.trim())) {
+      updateProfile({
+        [field]: [...currentItems, item.trim()]
+      });
+    }
+    
+    if (field === 'allergies') setNewAllergy("");
+    if (field === 'health_goals') setNewGoal("");
+  };
+
+  const removeItem = (index: number, field: 'allergies' | 'health_goals' | 'dietary_preferences') => {
+    const currentItems = profile[field] || [];
+    updateProfile({
+      [field]: currentItems.filter((_, i) => i !== index)
+    });
+  };
+
+  const toggleDietaryPreference = (preference: string) => {
+    const currentPrefs = profile.dietary_preferences || [];
+    updateProfile({
+      dietary_preferences: currentPrefs.includes(preference)
+        ? currentPrefs.filter(p => p !== preference)
+        : [...currentPrefs, preference]
+    });
+  };
 
   const commonAllergies = [
     "Nuts", "Dairy", "Gluten", "Seafood", "Eggs", "Soy", "Shellfish", "Peanuts"
@@ -54,49 +77,29 @@ export const PersonalProfile = () => {
     "Vegetarian", "Vegan", "Keto", "Paleo", "Mediterranean", "Low Carb", "High Protein", "Low Sodium"
   ];
 
-  const addItem = (item: string, field: 'diseases' | 'allergies') => {
-    if (!item.trim()) return;
-    
-    setProfileData(prev => ({
-      ...prev,
-      [field]: [...prev[field], item.trim()]
-    }));
-    
-    if (field === 'diseases') setNewDisease("");
-    if (field === 'allergies') setNewAllergy("");
-  };
-
-  const removeItem = (index: number, field: 'diseases' | 'allergies' | 'dietaryPreferences') => {
-    setProfileData(prev => ({
-      ...prev,
-      [field]: prev[field].filter((_, i) => i !== index)
-    }));
-  };
-
-  const toggleDietaryPreference = (preference: string) => {
-    setProfileData(prev => ({
-      ...prev,
-      dietaryPreferences: prev.dietaryPreferences.includes(preference)
-        ? prev.dietaryPreferences.filter(p => p !== preference)
-        : [...prev.dietaryPreferences, preference]
-    }));
-  };
-
-  const handleSave = () => {
-    // For now, just show a toast - API integration will come later
-    toast({
-      title: "Profile Saved!",
-      description: "Your health profile has been updated successfully.",
-    });
-  };
+  const healthGoals = [
+    "Weight Loss", "Weight Gain", "Muscle Building", "Heart Health", "Blood Sugar Control", 
+    "Digestive Health", "Energy Boost", "Better Sleep", "Stress Management"
+  ];
 
   return (
     <div className="min-h-screen bg-background p-4 pb-20">
       <div className="max-w-2xl mx-auto space-y-6">
-        <div className="text-center mb-6">
-          <User className="h-12 w-12 mx-auto text-primary mb-2" />
-          <h1 className="text-2xl font-bold text-foreground">Personal Health Profile</h1>
-          <p className="text-muted-foreground">Help us personalize your nutrition journey</p>
+        <div className="flex justify-between items-center mb-6">
+          <div className="text-center flex-1">
+            <User className="h-12 w-12 mx-auto text-primary mb-2" />
+            <h1 className="text-2xl font-bold text-foreground">Personal Health Profile</h1>
+            <p className="text-muted-foreground">Welcome, {profile.first_name || user?.email}!</p>
+          </div>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={signOut}
+            className="flex items-center gap-2"
+          >
+            <LogOut className="h-4 w-4" />
+            Sign Out
+          </Button>
         </div>
 
         {/* Basic Information */}
@@ -111,22 +114,21 @@ export const PersonalProfile = () => {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
+                <Label htmlFor="first-name">First Name</Label>
                 <Input
-                  id="name"
-                  value={profileData.name}
-                  onChange={(e) => setProfileData(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="Enter your full name"
+                  id="first-name"
+                  value={profile.first_name || ''}
+                  onChange={(e) => handleInputChange('first_name', e.target.value)}
+                  placeholder="Enter your first name"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="age">Age</Label>
+                <Label htmlFor="last-name">Last Name</Label>
                 <Input
-                  id="age"
-                  type="number"
-                  value={profileData.age}
-                  onChange={(e) => setProfileData(prev => ({ ...prev, age: e.target.value }))}
-                  placeholder="Enter your age"
+                  id="last-name"
+                  value={profile.last_name || ''}
+                  onChange={(e) => handleInputChange('last_name', e.target.value)}
+                  placeholder="Enter your last name"
                 />
               </div>
               <div className="space-y-2">
@@ -134,8 +136,8 @@ export const PersonalProfile = () => {
                 <Input
                   id="weight"
                   type="number"
-                  value={profileData.weight}
-                  onChange={(e) => setProfileData(prev => ({ ...prev, weight: e.target.value }))}
+                  value={profile.weight_kg || ''}
+                  onChange={(e) => handleInputChange('weight_kg', parseFloat(e.target.value) || null)}
                   placeholder="Enter your weight"
                 />
               </div>
@@ -144,9 +146,31 @@ export const PersonalProfile = () => {
                 <Input
                   id="height"
                   type="number"
-                  value={profileData.height}
-                  onChange={(e) => setProfileData(prev => ({ ...prev, height: e.target.value }))}
+                  value={profile.height_cm || ''}
+                  onChange={(e) => handleInputChange('height_cm', parseInt(e.target.value) || null)}
                   placeholder="Enter your height"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="gender">Gender</Label>
+                <Select value={profile.gender || ''} onValueChange={(value) => handleInputChange('gender', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">Male</SelectItem>
+                    <SelectItem value="female">Female</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="date-of-birth">Date of Birth</Label>
+                <Input
+                  id="date-of-birth"
+                  type="date"
+                  value={profile.date_of_birth || ''}
+                  onChange={(e) => handleInputChange('date_of_birth', e.target.value)}
                 />
               </div>
             </div>
@@ -165,62 +189,65 @@ export const PersonalProfile = () => {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="activity">Activity Level</Label>
-              <Select value={profileData.activityLevel} onValueChange={(value) => 
-                setProfileData(prev => ({ ...prev, activityLevel: value }))
-              }>
+              <Select value={profile.activity_level} onValueChange={(value) => handleInputChange('activity_level', value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select your activity level" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="sedentary">Sedentary (Little to no exercise)</SelectItem>
-                  <SelectItem value="light">Lightly Active (Light exercise 1-3 days/week)</SelectItem>
-                  <SelectItem value="moderate">Moderately Active (Moderate exercise 3-5 days/week)</SelectItem>
-                  <SelectItem value="very">Very Active (Hard exercise 6-7 days/week)</SelectItem>
-                  <SelectItem value="extremely">Extremely Active (Very hard exercise & physical job)</SelectItem>
+                  <SelectItem value="lightly_active">Lightly Active (Light exercise 1-3 days/week)</SelectItem>
+                  <SelectItem value="moderately_active">Moderately Active (Moderate exercise 3-5 days/week)</SelectItem>
+                  <SelectItem value="very_active">Very Active (Hard exercise 6-7 days/week)</SelectItem>
+                  <SelectItem value="extra_active">Extremely Active (Very hard exercise & physical job)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="goal">Primary Goal</Label>
-              <Select value={profileData.goal} onValueChange={(value) => 
-                setProfileData(prev => ({ ...prev, goal: value }))
-              }>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select your primary goal" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="lose">Lose Weight</SelectItem>
-                  <SelectItem value="maintain">Maintain Weight</SelectItem>
-                  <SelectItem value="gain">Gain Weight</SelectItem>
-                  <SelectItem value="muscle">Build Muscle</SelectItem>
-                  <SelectItem value="health">Improve Overall Health</SelectItem>
-                </SelectContent>
-              </Select>
+            
+            {/* Daily Targets */}
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              <div className="space-y-2">
+                <Label htmlFor="calories">Daily Calories Target</Label>
+                <Input
+                  id="calories"
+                  type="number"
+                  value={profile.daily_calorie_target || ''}
+                  onChange={(e) => handleInputChange('daily_calorie_target', parseInt(e.target.value) || null)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="protein">Daily Protein (g)</Label>
+                <Input
+                  id="protein"
+                  type="number"
+                  value={profile.daily_protein_target || ''}
+                  onChange={(e) => handleInputChange('daily_protein_target', parseInt(e.target.value) || null)}
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Health Conditions */}
+        {/* Health Goals */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Heart className="h-5 w-5" />
-              Health Conditions
+              Health Goals
             </CardTitle>
-            <CardDescription>Help us understand your medical history</CardDescription>
+            <CardDescription>What do you want to achieve?</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label>Diseases/Conditions</Label>
+              <Label>Health Goals</Label>
               <div className="flex gap-2">
                 <Input
-                  value={newDisease}
-                  onChange={(e) => setNewDisease(e.target.value)}
-                  placeholder="Add a health condition"
-                  onKeyPress={(e) => e.key === 'Enter' && addItem(newDisease, 'diseases')}
+                  value={newGoal}
+                  onChange={(e) => setNewGoal(e.target.value)}
+                  placeholder="Add a health goal"
+                  onKeyPress={(e) => e.key === 'Enter' && addItem(newGoal, 'health_goals')}
                 />
                 <Button 
-                  onClick={() => addItem(newDisease, 'diseases')}
+                  onClick={() => addItem(newGoal, 'health_goals')}
                   variant="outline"
                   size="sm"
                 >
@@ -228,25 +255,25 @@ export const PersonalProfile = () => {
                 </Button>
               </div>
               <div className="flex flex-wrap gap-2 mt-2">
-                {commonDiseases.map((disease) => (
+                {healthGoals.map((goal) => (
                   <Badge
-                    key={disease}
-                    variant={profileData.diseases.includes(disease) ? "default" : "outline"}
+                    key={goal}
+                    variant={profile.health_goals?.includes(goal) ? "default" : "outline"}
                     className="cursor-pointer"
-                    onClick={() => addItem(disease, 'diseases')}
+                    onClick={() => addItem(goal, 'health_goals')}
                   >
-                    {disease}
+                    {goal}
                   </Badge>
                 ))}
               </div>
-              {profileData.diseases.length > 0 && (
+              {profile.health_goals && profile.health_goals.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-2 p-2 bg-muted/50 rounded-md">
-                  {profileData.diseases.map((disease, index) => (
+                  {profile.health_goals.map((goal, index) => (
                     <Badge key={index} variant="secondary" className="flex items-center gap-1">
-                      {disease}
+                      {goal}
                       <X 
                         className="h-3 w-3 cursor-pointer" 
-                        onClick={() => removeItem(index, 'diseases')}
+                        onClick={() => removeItem(index, 'health_goals')}
                       />
                     </Badge>
                   ))}
@@ -287,7 +314,7 @@ export const PersonalProfile = () => {
                 {commonAllergies.map((allergy) => (
                   <Badge
                     key={allergy}
-                    variant={profileData.allergies.includes(allergy) ? "default" : "outline"}
+                    variant={profile.allergies?.includes(allergy) ? "default" : "outline"}
                     className="cursor-pointer"
                     onClick={() => addItem(allergy, 'allergies')}
                   >
@@ -295,9 +322,9 @@ export const PersonalProfile = () => {
                   </Badge>
                 ))}
               </div>
-              {profileData.allergies.length > 0 && (
+              {profile.allergies && profile.allergies.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-2 p-2 bg-muted/50 rounded-md">
-                  {profileData.allergies.map((allergy, index) => (
+                  {profile.allergies.map((allergy, index) => (
                     <Badge key={index} variant="destructive" className="flex items-center gap-1">
                       {allergy}
                       <X 
@@ -327,7 +354,7 @@ export const PersonalProfile = () => {
                 <div key={preference} className="flex items-center space-x-2">
                   <Checkbox
                     id={preference}
-                    checked={profileData.dietaryPreferences.includes(preference)}
+                    checked={profile.dietary_preferences?.includes(preference) || false}
                     onCheckedChange={() => toggleDietaryPreference(preference)}
                   />
                   <Label htmlFor={preference} className="text-sm font-medium cursor-pointer">
@@ -336,39 +363,19 @@ export const PersonalProfile = () => {
                 </div>
               ))}
             </div>
-            {profileData.dietaryPreferences.length > 0 && (
+            {profile.dietary_preferences && profile.dietary_preferences.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-4 p-2 bg-muted/50 rounded-md">
-                {profileData.dietaryPreferences.map((preference, index) => (
+                {profile.dietary_preferences.map((preference, index) => (
                   <Badge key={index} variant="secondary" className="flex items-center gap-1">
                     {preference}
                     <X 
                       className="h-3 w-3 cursor-pointer" 
-                      onClick={() => removeItem(index, 'dietaryPreferences')}
+                      onClick={() => removeItem(index, 'dietary_preferences')}
                     />
                   </Badge>
                 ))}
               </div>
             )}
-          </CardContent>
-        </Card>
-
-        {/* Medications */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Current Medications</CardTitle>
-            <CardDescription>List any medications you're currently taking</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <Label htmlFor="medications">Medications</Label>
-              <Textarea
-                id="medications"
-                value={profileData.medications}
-                onChange={(e) => setProfileData(prev => ({ ...prev, medications: e.target.value }))}
-                placeholder="List your current medications, supplements, or vitamins..."
-                className="min-h-[100px]"
-              />
-            </div>
           </CardContent>
         </Card>
 
@@ -379,9 +386,18 @@ export const PersonalProfile = () => {
               <p className="text-sm text-muted-foreground">
                 Your profile helps us provide personalized nutrition recommendations and meal plans.
               </p>
-              <Button onClick={handleSave} className="w-full md:w-auto">
-                Save Profile
-              </Button>
+              <div className="flex justify-center">
+                <Button disabled={saving} className="w-full md:w-auto">
+                  {saving ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    'Profile Auto-Saved'
+                  )}
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>

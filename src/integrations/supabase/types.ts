@@ -14,7 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          activity_level: string | null
+          allergies: string[] | null
+          avatar_url: string | null
+          created_at: string
+          daily_calorie_target: number | null
+          daily_carb_target: number | null
+          daily_fat_target: number | null
+          daily_protein_target: number | null
+          daily_water_target: number | null
+          date_of_birth: string | null
+          dietary_preferences: string[] | null
+          first_name: string | null
+          gender: string | null
+          health_goals: string[] | null
+          height_cm: number | null
+          id: string
+          last_name: string | null
+          updated_at: string
+          user_id: string
+          weight_kg: number | null
+        }
+        Insert: {
+          activity_level?: string | null
+          allergies?: string[] | null
+          avatar_url?: string | null
+          created_at?: string
+          daily_calorie_target?: number | null
+          daily_carb_target?: number | null
+          daily_fat_target?: number | null
+          daily_protein_target?: number | null
+          daily_water_target?: number | null
+          date_of_birth?: string | null
+          dietary_preferences?: string[] | null
+          first_name?: string | null
+          gender?: string | null
+          health_goals?: string[] | null
+          height_cm?: number | null
+          id?: string
+          last_name?: string | null
+          updated_at?: string
+          user_id: string
+          weight_kg?: number | null
+        }
+        Update: {
+          activity_level?: string | null
+          allergies?: string[] | null
+          avatar_url?: string | null
+          created_at?: string
+          daily_calorie_target?: number | null
+          daily_carb_target?: number | null
+          daily_fat_target?: number | null
+          daily_protein_target?: number | null
+          daily_water_target?: number | null
+          date_of_birth?: string | null
+          dietary_preferences?: string[] | null
+          first_name?: string | null
+          gender?: string | null
+          health_goals?: string[] | null
+          height_cm?: number | null
+          id?: string
+          last_name?: string | null
+          updated_at?: string
+          user_id?: string
+          weight_kg?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
