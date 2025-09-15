@@ -5,16 +5,35 @@ import { Button } from "@/components/ui/button";
 import { Droplets, Utensils, Trophy, TrendingUp, Activity, Target, Gift, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
+import { useMeals } from "@/hooks/useMeals";
+import { useDailyProgress } from "@/hooks/useDailyProgress";
 import heroImage from "@/assets/nutrisnap-hero.jpg";
 
-export const Dashboard = () => {
+interface DashboardProps {
+  onTabChange?: (tab: string) => void;
+}
+
+export const Dashboard = ({ onTabChange }: DashboardProps = {}) => {
   const { user, signOut } = useAuth();
   const { profile } = useProfile();
+  const { getTodaysNutrition } = useMeals();
+  const { todaysProgress, addWater } = useDailyProgress();
+  
+  const todaysNutrition = getTodaysNutrition();
   
   const dailyGoals = {
-    calories: { current: 1650, target: profile?.daily_calorie_target || 2000 },
-    water: { current: 6, target: profile?.daily_water_target || 8 },
-    steps: { current: 8500, target: 10000 }
+    calories: { 
+      current: Math.round(todaysNutrition.calories), 
+      target: profile?.daily_calorie_target || 2000 
+    },
+    water: { 
+      current: todaysProgress?.water_consumed || 0, 
+      target: profile?.daily_water_target || 8 
+    },
+    steps: { 
+      current: todaysProgress?.steps_taken || 0, 
+      target: 10000 
+    }
   };
 
   const progressPercentage = (current: number, target: number) => (current / target) * 100;
@@ -97,22 +116,34 @@ export const Dashboard = () => {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="p-4 text-center shadow-card hover:shadow-glow transition-all cursor-pointer">
+          <Card 
+            className="p-4 text-center shadow-card hover:shadow-glow transition-all cursor-pointer"
+            onClick={() => onTabChange?.('meals')}
+          >
             <Utensils className="h-8 w-8 mx-auto mb-2 text-primary" />
             <h3 className="font-medium">Track Meal</h3>
           </Card>
           
-          <Card className="p-4 text-center shadow-card hover:shadow-glow transition-all cursor-pointer">
+          <Card 
+            className="p-4 text-center shadow-card hover:shadow-glow transition-all cursor-pointer"
+            onClick={() => addWater(1)}
+          >
             <Droplets className="h-8 w-8 mx-auto mb-2 text-nutrition-water" />
             <h3 className="font-medium">Log Water</h3>
           </Card>
           
-          <Card className="p-4 text-center shadow-card hover:shadow-glow transition-all cursor-pointer">
+          <Card 
+            className="p-4 text-center shadow-card hover:shadow-glow transition-all cursor-pointer"
+            onClick={() => onTabChange?.('progress')}
+          >
             <TrendingUp className="h-8 w-8 mx-auto mb-2 text-accent" />
-            <h3 className="font-medium">Trending</h3>
+            <h3 className="font-medium">Progress</h3>
           </Card>
           
-          <Card className="p-4 text-center shadow-card hover:shadow-glow transition-all cursor-pointer">
+          <Card 
+            className="p-4 text-center shadow-card hover:shadow-glow transition-all cursor-pointer"
+            onClick={() => onTabChange?.('rewards')}
+          >
             <Gift className="h-8 w-8 mx-auto mb-2 text-nutrition-vitamins" />
             <h3 className="font-medium">Rewards</h3>
           </Card>

@@ -1,4 +1,4 @@
-import { Home, Utensils, Droplets, Camera, Gift, User } from "lucide-react";
+import { Home, Utensils, Droplets, Camera, Gift, User, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface BottomNavigationProps {
@@ -11,9 +11,9 @@ export const BottomNavigation = ({ activeTab, onTabChange }: BottomNavigationPro
     { id: 'dashboard', label: 'Home', icon: Home },
     { id: 'meals', label: 'Meals', icon: Utensils },
     { id: 'camera', label: 'Scan', icon: Camera },
-    { id: 'water', label: 'Water', icon: Droplets },
-    { id: 'profile', label: 'Profile', icon: User },
+    { id: 'progress', label: 'Progress', icon: TrendingUp },
     { id: 'rewards', label: 'Rewards', icon: Gift },
+    { id: 'profile', label: 'Profile', icon: User },
   ];
 
   return (

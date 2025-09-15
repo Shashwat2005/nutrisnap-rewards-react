@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Dashboard } from "@/components/Dashboard";
 import { WaterTracker } from "@/components/WaterTracker";
-import { RecipeList } from "@/components/RecipeList";
+import { FoodLogger } from "@/components/FoodLogger";
+import { ProgressTracker } from "@/components/ProgressTracker";
 import { CameraScanner } from "@/components/CameraScanner";
-import { RewardsSection } from "@/components/RewardsSection";
+import { AchievementCenter } from "@/components/AchievementCenter";
 import { PersonalProfile } from "@/components/PersonalProfile";
 import { BottomNavigation } from "@/components/BottomNavigation";
 
@@ -13,17 +14,19 @@ const Index = () => {
   const renderActiveComponent = () => {
     switch (activeTab) {
       case 'dashboard':
-        return <Dashboard />;
+        return <Dashboard onTabChange={setActiveTab} />;
       case 'water':
         return <WaterTracker />;
       case 'meals':
-        return <RecipeList />;
+        return <FoodLogger />;
+      case 'progress':
+        return <ProgressTracker />;
       case 'camera':
         return <CameraScanner />;
       case 'profile':
         return <PersonalProfile />;
       case 'rewards':
-        return <RewardsSection />;
+        return <AchievementCenter />;
       default:
         return <Dashboard />;
     }
