@@ -154,7 +154,7 @@ export const useMeals = () => {
             total_fat: fat,
           })
           .select()
-          .single();
+          .maybeSingle();
 
         if (mealError) throw mealError;
         meal = newMeal as Meal;
