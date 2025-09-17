@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import nutriSnapLogo from "@/assets/nutrisnap-logo.png";
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -24,48 +25,14 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
               <div className="absolute inset-0 border-4 border-white/30 rounded-full animate-spin"></div>
               <div className="absolute inset-2 border-2 border-white/20 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '3s' }}></div>
               
-              {/* Logo SVG */}
+              {/* NutriSnap Logo */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <svg
-                  width="64"
-                  height="64"
-                  viewBox="0 0 64 64"
-                  fill="none"
-                  className="text-white animate-pulse"
-                >
-                  {/* Leaf icon representing nutrition */}
-                  <path
-                    d="M32 8C24 8 18 14 18 22C18 30 32 48 32 48S46 30 46 22C46 14 40 8 32 8Z"
-                    fill="currentColor"
-                    className="animate-fade-in"
-                    style={{ animationDelay: '0.5s' }}
-                  />
-                  <circle
-                    cx="32"
-                    cy="22"
-                    r="6"
-                    fill="white"
-                    className="animate-scale-in"
-                    style={{ animationDelay: '1s' }}
-                  />
-                  {/* Small decorative elements */}
-                  <circle
-                    cx="26"
-                    cy="16"
-                    r="2"
-                    fill="rgba(255,255,255,0.6)"
-                    className="animate-fade-in"
-                    style={{ animationDelay: '1.5s' }}
-                  />
-                  <circle
-                    cx="38"
-                    cy="28"
-                    r="2"
-                    fill="rgba(255,255,255,0.6)"
-                    className="animate-fade-in"
-                    style={{ animationDelay: '1.7s' }}
-                  />
-                </svg>
+                <img 
+                  src={nutriSnapLogo} 
+                  alt="NutriSnap Logo"
+                  className="w-16 h-16 animate-pulse"
+                  style={{ animationDelay: '0.5s' }}
+                />
               </div>
             </div>
           </div>
