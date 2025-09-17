@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import nutriSnapLogo from "@/assets/nutrisnap-logo.png";
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -27,12 +26,93 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
               
               {/* NutriSnap Logo */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <img 
-                  src={nutriSnapLogo} 
-                  alt="NutriSnap Logo"
-                  className="w-16 h-16 animate-pulse"
-                  style={{ animationDelay: '0.5s' }}
-                />
+                <svg
+                  width="64"
+                  height="64"
+                  viewBox="0 0 64 64"
+                  fill="none"
+                  className="text-white animate-pulse"
+                >
+                  {/* Camera lens outer ring */}
+                  <circle
+                    cx="32"
+                    cy="32"
+                    r="20"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    fill="none"
+                    className="animate-fade-in"
+                    style={{ animationDelay: '0.5s' }}
+                  />
+                  
+                  {/* Camera lens inner ring */}
+                  <circle
+                    cx="32"
+                    cy="32"
+                    r="12"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    fill="rgba(255,255,255,0.1)"
+                    className="animate-scale-in"
+                    style={{ animationDelay: '0.8s' }}
+                  />
+                  
+                  {/* Aperture blades forming camera shutter */}
+                  <path
+                    d="M32 24L36 28L32 32L28 28Z"
+                    fill="currentColor"
+                    className="animate-fade-in"
+                    style={{ animationDelay: '1s' }}
+                  />
+                  <path
+                    d="M40 32L36 36L32 32L36 28Z"
+                    fill="rgba(255,255,255,0.7)"
+                    className="animate-fade-in"
+                    style={{ animationDelay: '1.2s' }}
+                  />
+                  <path
+                    d="M32 40L28 36L32 32L36 36Z"
+                    fill="rgba(255,255,255,0.7)"
+                    className="animate-fade-in"
+                    style={{ animationDelay: '1.4s' }}
+                  />
+                  <path
+                    d="M24 32L28 28L32 32L28 36Z"
+                    fill="rgba(255,255,255,0.7)"
+                    className="animate-fade-in"
+                    style={{ animationDelay: '1.6s' }}
+                  />
+                  
+                  {/* Nutrition leaf elements around the lens */}
+                  <path
+                    d="M20 16C18 14 16 16 18 18C20 20 22 18 20 16Z"
+                    fill="rgba(255,255,255,0.6)"
+                    className="animate-fade-in"
+                    style={{ animationDelay: '1.8s' }}
+                  />
+                  <path
+                    d="M48 20C46 18 44 20 46 22C48 24 50 22 48 20Z"
+                    fill="rgba(255,255,255,0.6)"
+                    className="animate-fade-in"
+                    style={{ animationDelay: '2s' }}
+                  />
+                  <path
+                    d="M16 44C14 42 12 44 14 46C16 48 18 46 16 44Z"
+                    fill="rgba(255,255,255,0.6)"
+                    className="animate-fade-in"
+                    style={{ animationDelay: '2.2s' }}
+                  />
+                  
+                  {/* Center focus dot */}
+                  <circle
+                    cx="32"
+                    cy="32"
+                    r="2"
+                    fill="white"
+                    className="animate-scale-in"
+                    style={{ animationDelay: '2.4s' }}
+                  />
+                </svg>
               </div>
             </div>
           </div>
