@@ -10,7 +10,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import SplashScreen from "./components/SplashScreen";
-import ProductLookupPage from "./src/pages/ProductLookupPage";
+import ProductLookupPage from "./pages/ProductLookupPage";
 
 function App() {
   return (
