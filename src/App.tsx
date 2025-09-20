@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,18 +11,6 @@ import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import SplashScreen from "./components/SplashScreen";
 import ProductLookupPage from "./pages/ProductLookupPage";
-
-function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        {/* ✅ Add your other routes here */}
-        <Route path="/" element={<h1 className="p-6 text-2xl">Home Page</h1>} />
-        <Route path="/lookup" element={<ProductLookupPage />} />
-      </Routes>
-    </BrowserRouter>
-  );
-}
 
 const queryClient = new QueryClient();
 
@@ -46,15 +34,15 @@ const App = () => {
           <BrowserRouter>
             <Routes>
               <Route path="/auth" element={<Auth />} />
-              <Route 
-                path="/" 
+              <Route
+                path="/"
                 element={
                   <ProtectedRoute>
                     <Index />
                   </ProtectedRoute>
-                } 
+                }
               />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="/lookup" element={<ProductLookupPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
