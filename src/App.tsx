@@ -10,6 +10,20 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import SplashScreen from "./components/SplashScreen";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ProductLookupPage from "./src/pages/ProductLookupPage";
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* ✅ Add your other routes here */}
+        <Route path="/" element={<h1 className="p-6 text-2xl">Home Page</h1>} />
+        <Route path="/lookup" element={<ProductLookupPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
 
 const queryClient = new QueryClient();
 
