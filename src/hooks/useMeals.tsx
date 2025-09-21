@@ -16,6 +16,7 @@ export interface Food {
   sugar_per_100g?: number;
   sodium_per_100g?: number;
   verified: boolean;
+  source?: "supabase" | "api"; // 👈 new field to know where it came from
 }
 
 export interface MealItem {
@@ -108,7 +109,12 @@ export const useMeals = () => {
         return;
       }
 
-      setFoods(data || []);
+      setFoods(
+        (data || []).map(f => ({
+          ...f,
+          source: "supabase" as const,
+        }))
+      );
     } catch (error) {
       console.error('Error:', error);
     }
@@ -123,10 +129,10 @@ export const useMeals = () => {
 
     setSaving(true);
     try {
-      // Get food data
+      // 👇 find food from local supabase foods (API foods won't exist in DB yet)
       const food = foods.find(f => f.id === foodId);
       if (!food) {
-        throw new Error('Food not found');
+        throw new Error('Food not found in database (API foods cannot be saved yet)');
       }
 
       // Calculate nutrition values
@@ -136,12 +142,10 @@ export const useMeals = () => {
       const carbs = food.carbs_per_100g * factor;
       const fat = food.fat_per_100g * factor;
 
-      // Find or create meal for today
       const today = new Date().toISOString().split('T')[0];
       let meal = meals.find(m => m.meal_type === mealType && m.meal_date === today);
 
       if (!meal) {
-        // Create new meal
         const { data: newMeal, error: mealError } = await supabase
           .from('meals')
           .insert({
@@ -159,7 +163,6 @@ export const useMeals = () => {
         if (mealError) throw mealError;
         meal = newMeal as Meal;
       } else {
-        // Update existing meal totals
         const { error: updateError } = await supabase
           .from('meals')
           .update({
@@ -173,7 +176,6 @@ export const useMeals = () => {
         if (updateError) throw updateError;
       }
 
-      // Add meal item
       const { error: itemError } = await supabase
         .from('meal_items')
         .insert({
@@ -237,14 +239,44 @@ export const useMeals = () => {
     }
   };
 
-  const searchFoods = (query: string): Food[] => {
-    if (!query) return foods;
-    
+  // 🔥 NEW: Mixed API + Supabase search
+  const searchFoods = async (query: string): Promise<Food[]> => {
+    if (!query) return [];
+
+    // Local supabase foods first
     const lowercaseQuery = query.toLowerCase();
-    return foods.filter(food => 
+    const localFoods = foods.filter(food => 
       food.name.toLowerCase().includes(lowercaseQuery) ||
       (food.brand && food.brand.toLowerCase().includes(lowercaseQuery))
     );
+
+    // API foods
+    let apiFoods: Food[] = [];
+    try {
+      const res = await fetch(
+        `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1`
+      );
+      const data = await res.json();
+      apiFoods = (data.products || []).map((p: any, idx: number) => ({
+        id: p.id || `api-${idx}`,
+        name: p.product_name || "Unknown food",
+        brand: p.brands || "",
+        calories_per_100g: p.nutriments?.["energy-kcal_100g"] || 0,
+        protein_per_100g: p.nutriments?.["proteins_100g"] || 0,
+        carbs_per_100g: p.nutriments?.["carbohydrates_100g"] || 0,
+        fat_per_100g: p.nutriments?.["fat_100g"] || 0,
+        fiber_per_100g: p.nutriments?.["fiber_100g"] || 0,
+        sugar_per_100g: p.nutriments?.["sugars_100g"] || 0,
+        sodium_per_100g: p.nutriments?.["sodium_100g"] || 0,
+        verified: Boolean(p.nutriments),
+        source: "api" as const,
+      }));
+    } catch (err) {
+      console.error("Error fetching API foods:", err);
+    }
+
+    // merge (local first, then API)
+    return [...localFoods, ...apiFoods];
   };
 
   const getTodaysNutrition = () => {
