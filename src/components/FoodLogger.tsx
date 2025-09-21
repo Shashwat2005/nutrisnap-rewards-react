@@ -18,7 +18,22 @@ export const FoodLogger = () => {
   const [selectedFood, setSelectedFood] = useState<string>('');
   const [quantity, setQuantity] = useState<string>('100');
 
-  const searchResults = searchFoods(searchQuery);
+ const [searchResults, setSearchResults] = useState<Food[]>([]);
+const { searchFoods } = useMeals();
+
+useEffect(() => {
+  let active = true;
+  const runSearch = async () => {
+    if (searchQuery.trim()) {
+      const results = await searchFoods(searchQuery);
+      if (active) setSearchResults(results);
+    } else {
+      setSearchResults([]);
+    }
+  };
+  runSearch();
+  return () => { active = false };
+}, [searchQuery]);
   const todaysNutrition = getTodaysNutrition();
 
   const getMealIcon = (mealType: Meal['meal_type']) => {
