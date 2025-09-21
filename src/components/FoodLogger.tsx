@@ -19,7 +19,6 @@ export const FoodLogger = () => {
   const [quantity, setQuantity] = useState<string>('100');
 
  const [searchResults, setSearchResults] = useState<Food[]>([]);
-const { searchFoods } = useMeals();
 
 useEffect(() => {
   let active = true;
