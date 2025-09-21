@@ -10,7 +10,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import SplashScreen from "./components/SplashScreen";
-import ProductLookupPage from "./pages/ProductLookupPage";
+import MealsPage from "./pages/MealsPage";
 
 const queryClient = new QueryClient();
 
@@ -33,18 +33,25 @@ const App = () => {
           <Sonner />
           <BrowserRouter>
             <Routes>
-              <Route path="/auth" element={<Auth />} />
-              <Route
-                path="/"
-                element={
-                  <ProtectedRoute>
-                    <Index />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/lookup" element={<ProductLookupPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+  <Route path="/auth" element={<Auth />} />
+  <Route
+    path="/"
+    element={
+      <ProtectedRoute>
+        <Index />
+      </ProtectedRoute>
+    }
+  />
+  <Route
+    path="/meals"
+    element={
+      <ProtectedRoute>
+        <MealsPage />
+      </ProtectedRoute>
+    }
+  />
+  <Route path="*" element={<NotFound />} />
+</Routes>
           </BrowserRouter>
         </AuthProvider>
       </TooltipProvider>
