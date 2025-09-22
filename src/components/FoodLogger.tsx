@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Search, Plus, Minus, Utensils, Coffee, Sun, Moon, Cookie, Zap, Leaf, Timer, Apple } from 'lucide-react';
 import { useMeals, type Meal } from '@/hooks/useMeals';
 import { useProfile } from '@/hooks/useProfile';
+import type { Food } from '@/hooks/useMeals';
 
 export const FoodLogger = () => {
   const { meals, foods, loading, saving, addMealItem, removeMealItem, searchFoods, getTodaysNutrition } = useMeals();
